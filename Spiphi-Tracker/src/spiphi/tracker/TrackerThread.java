@@ -22,10 +22,12 @@ public class TrackerThread implements Runnable {
         System.out.println("Connecting to client");
         try {
             //Set up Streams
+            System.out.println("Creating Streams");
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             //Begin Communication
             //Type of Packet
+            System.out.println("Reading Packet");
             int type = input.read();
             //Length of data
             int dataLen = input.read();
@@ -34,6 +36,7 @@ public class TrackerThread implements Runnable {
             input.read(data);
             //Parses it
             Packet packet = Packet.parse(type,data);
+            System.out.println("Sending Packet");
             Packet outPacket = null;
             switch(packet.type){
                 case 1://Ping
