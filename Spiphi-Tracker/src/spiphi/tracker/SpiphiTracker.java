@@ -29,6 +29,7 @@ public class SpiphiTracker {
         } catch (IOException ex) {
             System.out.println("Could not bind to port: "+serverListenerSocket);
         }
+        System.out.println("Starting Server");
         while (true) {
             try {
                 Socket socket = listener.accept();
@@ -38,6 +39,4 @@ public class SpiphiTracker {
             }
         }
     }
-}
-
 }
