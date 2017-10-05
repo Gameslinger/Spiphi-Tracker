@@ -24,12 +24,17 @@ public class IpLookupRespPacket extends Packet{
     }
     public IpLookupRespPacket(char data[]) {
         super(4, data);
-        this.ip = new String(data);
+        StringBuilder str = new StringBuilder();
+        for(int i = 0; i < data.length; i++){
+            str.append((int)data[i]);
+            if(i!=data.length-1)str.append('.');
+        }
+        this.ip = str.toString();
     }
     
     @Override
     public String toString() {
-        return super.toString() + ip;
+        return super.toString() +" Ip: " + ip;
     }
     
 }

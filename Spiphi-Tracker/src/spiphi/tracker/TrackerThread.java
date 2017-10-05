@@ -46,13 +46,13 @@ public class TrackerThread implements Runnable {
                     outPacket = new PingResponsePacket();//Type 2
                     break;
                 case 3: //IpLookup TODO: Moc lookup
-                    System.out.println("Sending Resp");
                     outPacket = new IpLookupRespPacket("123.231.223.243");
+                    
                     break;
                 default:
-                    System.out.println("Not Sending Resp");
                     outPacket = new EmptyPacket();
             }
+            System.out.println("Sent Packet "+outPacket);
             out.write(Packet.serialize(outPacket));
             out.flush();
         } catch (IOException ex) {
