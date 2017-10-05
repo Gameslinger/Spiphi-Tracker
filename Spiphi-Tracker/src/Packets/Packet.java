@@ -43,7 +43,7 @@ public class Packet {
             //Read data
             System.out.println("Type: "+(int)type+" Length: "+(int)dataLen);
             data = new char[dataLen];
-            System.out.println("Read chars:"+input.read(data, 0, 1));
+            System.out.println("Read chars:"+input.read(data, 0, dataLen));
         } catch (IOException ex) {
             ex.printStackTrace();
         }
