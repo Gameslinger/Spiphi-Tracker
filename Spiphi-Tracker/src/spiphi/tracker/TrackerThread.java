@@ -9,18 +9,22 @@ import Packets.Ping.PingResponsePacket;
 import Packets.*;
 import Packets.IpLookUp.IpLookupRespPacket;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
- * @author Gabriel.Maxfield
+ * @author Gabriel.Maxfield, Bennett.DenBleyker
  */
 public class TrackerThread implements Runnable {
 
-    final Socket socket;
+    private final Socket socket;
+    private Map<Integer,String> idToIp = new HashMap(); 
 
     public TrackerThread(Socket socket) {
         this.socket = socket;
@@ -45,9 +49,9 @@ public class TrackerThread implements Runnable {
                 case 1://Ping 1
                     outPacket = new PingResponsePacket();//Type 2
                     break;
-                case 3: //IpLookup TODO: Moc lookup
-                    outPacket = new IpLookupRespPacket("123.231.223.243");
-                    
+                case 3: //IpLookup
+                    updateIdToIP();
+                    outPacket = new IpLookupRespPacket(idToIp.get(Integer.valueOf(String.valueOf(packet.data))));
                     break;
                 default:
                     outPacket = new EmptyPacket();
@@ -64,6 +68,13 @@ public class TrackerThread implements Runnable {
                 System.out.println("Failed to Close Socket");
                 ex.printStackTrace();
             }
+        }
+    }
+    
+    private void updateIdToIP() {
+        String idtoip = "1:127.0.0.1\n1234:123.231.223.243";
+        for (String s : idtoip.split("\n")) {
+            idToIp.put(Integer.valueOf(s.split(":")[0]), s.split(":")[1]);
         }
     }
 
