@@ -12,7 +12,7 @@ package Packets;
 public class EmptyPacket extends Packet{
     
     public EmptyPacket() {
-        super(0, null);
+        super(0, new char[]{});
     }
     
 }

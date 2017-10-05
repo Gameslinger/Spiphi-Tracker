@@ -22,8 +22,8 @@ public class Packet {
         this.data = data;
     }
 
-    public static Packet parse(int type, char[] data) {
-        switch (type) {
+    public static Packet parse(char[] data) {
+        switch ((data[0]<<8)|data[1]) {
             case 1:
                 return new PingPacket();
             case 2:
@@ -38,17 +38,18 @@ public class Packet {
         char data[] = null;
         try {
             type = input.read();
-
             //Length of data
             int dataLen = input.read();
             //Read data
+            System.out.println("Type: "+(int)type+" Length: "+(int)dataLen);
             data = new char[dataLen];
-            input.read(data);
+            System.out.println("Read chars:"+input.read(data, 0, 1));
         } catch (IOException ex) {
             ex.printStackTrace();
         }
         switch (type) {
             case 1:
+                System.out.println("Recieved Ping Packet");
                 return new PingPacket();
             case 2:
                 return new PingResponsePacket(data);
@@ -70,6 +71,7 @@ public class Packet {
         for (int i = 0; i < packet.data.length; i++) {
             out[i + 4] = packet.data[i];
         }
+        System.out.println("Serialized Packet: "+out[0]+out[1]+out[2]+out[3]);
         return out;
     }
 }

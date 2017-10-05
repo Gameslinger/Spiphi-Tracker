@@ -35,14 +35,16 @@ public class TrackerThread implements Runnable {
             char data[] = new char[dataLen];
             input.read(data);
             //Parses it
-            Packet packet = Packet.parse(type,data);
+            Packet packet = Packet.parse(input);
             System.out.println("Sending Packet");
-            Packet outPacket = null;
+            Packet outPacket = new EmptyPacket();
             switch(packet.type){
                 case 1://Ping
                     outPacket = new PingResponsePacket();
             }
             out.write(Packet.serialize(outPacket));
+            System.out.println("Packet is: "+Packet.class.toString());
+            out.flush();
         } catch(IOException ex){
             ex.printStackTrace();
         }finally {
