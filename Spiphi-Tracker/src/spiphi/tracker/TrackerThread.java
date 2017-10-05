@@ -28,12 +28,6 @@ public class TrackerThread implements Runnable {
             //Begin Communication
             //Type of Packet
             System.out.println("Reading Packet");
-            int type = input.read();
-            //Length of data
-            int dataLen = input.read();
-            //Read data
-            char data[] = new char[dataLen];
-            input.read(data);
             //Parses it
             Packet packet = Packet.parse(input);
             System.out.println("Sending Packet");
@@ -43,7 +37,6 @@ public class TrackerThread implements Runnable {
                     outPacket = new PingResponsePacket();
             }
             out.write(Packet.serialize(outPacket));
-            System.out.println("Packet is: "+Packet.class.toString());
             out.flush();
         } catch(IOException ex){
             ex.printStackTrace();

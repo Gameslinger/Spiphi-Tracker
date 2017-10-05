@@ -55,12 +55,14 @@ public class Packet {
     }
 
     public static Packet parse(BufferedReader input) {
-        int type = 0;
+        int type = -1;
         char data[] = null;
         try {
-            type = input.read();
+            type = input.read();//Reads a char (upper byte of char)
+            type = (type<<8) | input.read();
             //Length of data
             int dataLen = input.read();
+            dataLen = (dataLen<<8) | input.read();
             //Read data
             System.out.println("Type: "+(int)type+" Length: "+(int)dataLen);
             data = new char[dataLen];
@@ -92,7 +94,7 @@ public class Packet {
         for (int i = 0; i < packet.data.length; i++) {
             out[i + 4] = packet.data[i];
         }
-        System.out.println("Serialized Packet: "+out[0]+out[1]+out[2]+out[3]);
+        System.out.println("Serialized Packet: "+(int)out[0]+(int)out[1]+(int)out[2]+(int)out[3]);
         return out;
     }
 }
