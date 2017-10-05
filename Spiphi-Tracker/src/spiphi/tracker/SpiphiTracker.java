@@ -8,8 +8,6 @@ package spiphi.tracker;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -34,6 +32,7 @@ public class SpiphiTracker {
             try {
                 Socket socket = listener.accept();
                 TrackerThread tracker = new TrackerThread(socket);
+                tracker.run();
             } catch (IOException ex) {
                ex.printStackTrace();
             }

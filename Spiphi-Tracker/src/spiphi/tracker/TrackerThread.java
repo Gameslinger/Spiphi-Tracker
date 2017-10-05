@@ -5,7 +5,9 @@
  */
 package spiphi.tracker;
 
+import Packets.Ping.PingResponsePacket;
 import Packets.*;
+import Packets.IpLookUp.IpLookupRespPacket;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,7 +20,14 @@ import java.net.Socket;
  */
 public class TrackerThread implements Runnable {
 
+    final Socket socket;
+
     public TrackerThread(Socket socket) {
+        this.socket = socket;
+    }
+
+    @Override
+    public void run() {
         System.out.println("Connecting to client");
         try {
             //Set up Streams
@@ -31,16 +40,24 @@ public class TrackerThread implements Runnable {
             //Parses it
             Packet packet = Packet.parse(input);
             System.out.println("Sending Packet");
-            Packet outPacket = new EmptyPacket();
-            switch(packet.type){
-                case 1://Ping
-                    outPacket = new PingResponsePacket();
+            Packet outPacket;
+            switch (packet.type) {
+                case 1://Ping 1
+                    outPacket = new PingResponsePacket();//Type 2
+                    break;
+                case 3: //IpLookup TODO: Moc lookup
+                    System.out.println("Sending Resp");
+                    outPacket = new IpLookupRespPacket("123.231.223.243");
+                    break;
+                default:
+                    System.out.println("Not Sending Resp");
+                    outPacket = new EmptyPacket();
             }
             out.write(Packet.serialize(outPacket));
             out.flush();
-        } catch(IOException ex){
+        } catch (IOException ex) {
             ex.printStackTrace();
-        }finally {
+        } finally {
             try {
                 socket.close();
             } catch (IOException ex) {
@@ -48,11 +65,6 @@ public class TrackerThread implements Runnable {
                 ex.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public void run() {
-
     }
 
 }
