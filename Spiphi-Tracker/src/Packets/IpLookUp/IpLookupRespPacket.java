@@ -5,14 +5,14 @@
  */
 package Packets.IpLookUp;
 
-import Packets.Packet;
+import Packets.APacket;
 import java.util.Arrays;
 
 /**
  *
  * @author Gabriel.Maxfield
  */
-public class IpLookupRespPacket extends Packet{
+public class IpLookupRespPacket extends APacket{
     public final String ip;
     public IpLookupRespPacket(String ip) {
         super(4, new char[4]);
@@ -36,5 +36,4 @@ public class IpLookupRespPacket extends Packet{
     public String toString() {
         return super.toString() +" Ip: " + ip;
     }
-    
 }

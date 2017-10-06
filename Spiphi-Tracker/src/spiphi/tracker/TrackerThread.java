@@ -5,14 +5,13 @@
  */
 package spiphi.tracker;
 
-import Packets.Ping.PingResponsePacket;
+import PacketManager.BufferedManager;
+import PacketManager.IPacketManager;
+import Packets.Test.TestRespPacket;
 import Packets.*;
+import Packets.IpLookUp.IpLookupPacket;
 import Packets.IpLookUp.IpLookupRespPacket;
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,57 +23,52 @@ import java.util.Map;
 public class TrackerThread implements Runnable {
 
     private final Socket socket;
-    private Map<Integer,String> idToIp = new HashMap(); 
-
+    private static final Map<Integer, String> IPMAP = new HashMap<>();
+    private IPacketManager man;
+    
+    static{
+        IPMAP.put(1234, "1.2.3.4");
+        IPMAP.put(2222, "2.2.2.2");
+        IPMAP.put(666, "6.6.6.6");
+    }
     public TrackerThread(Socket socket) {
         this.socket = socket;
     }
 
     @Override
     public void run() {
-        System.out.println("Connecting to client");
         try {
-            //Set up Streams
-            System.out.println("Creating Streams");
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            //Begin Communication
-            //Type of Packet
-            System.out.println("Reading Packet");
-            //Parses it
-            Packet packet = Packet.parse(input);
-            System.out.println("Sending Packet");
-            Packet outPacket;
-            switch (packet.type) {
-                case 1://Ping 1
-                    outPacket = new PingResponsePacket();//Type 2
-                    break;
-                case 3: //IpLookup
-                    updateIdToIP();
-                    outPacket = new IpLookupRespPacket(idToIp.get(Integer.valueOf(String.valueOf(packet.data))));
-                    break;
-                default:
-                    outPacket = new EmptyPacket();
+            man = new BufferedManager(this.socket);
+            APacket packet;
+            while ((packet = man.readPacket())!=null) {
+                APacket outPacket = handlePacket(packet);
+                man.sendPacket(outPacket);
             }
-            System.out.println("Sent Packet "+outPacket);
-            out.write(Packet.serialize(outPacket));
-            out.flush();
+
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
-            try {
-                socket.close();
-            } catch (IOException ex) {
-                System.out.println("Failed to Close Socket");
-                ex.printStackTrace();
-            }
+            man.close();
         }
     }
-    
-    private void updateIdToIP() {
-        String idtoip = "1:127.0.0.1\n1234:123.231.223.243";
-        for (String s : idtoip.split("\n")) {
-            idToIp.put(Integer.valueOf(s.split(":")[0]), s.split(":")[1]);
+
+    private void updateIdToIP(int id, String ip) {
+        IPMAP.put(id, ip);
+    }
+    private String getIpFromId(int id){
+        String resp = IPMAP.get(id);
+        if(resp == null) resp = "0.0.0.0";
+        return resp;
+    }
+
+    private APacket handlePacket(APacket packet) {
+        switch (packet.type) {
+            case 1://Test
+                return new TestRespPacket();
+            case 3:
+                return new IpLookupRespPacket(getIpFromId(((IpLookupPacket)packet).id));
+            default:
+                return new ErrorPacket();
         }
     }
 

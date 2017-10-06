@@ -3,16 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Packets;
+package Packets.Test;
+
+import Packets.APacket;
 
 /**
  *
  * @author Gabriel.Maxfield
  */
-public class EmptyPacket extends Packet{
-    
-    public EmptyPacket() {
-        super(0, new char[]{});
+public class TestPacket extends APacket{
+    public static char[] pingReq = {1};
+    public TestPacket() {
+        super(1,pingReq);
     }
     
 }
